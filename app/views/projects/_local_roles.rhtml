@@ -1,0 +1,33 @@
+<div class="contextual">
+  <%= link_to l(:label_role_new), new_project_local_role(@project), :class => 'icon icon-add' %>
+</div>
+
+<table class="list">
+  <thead>
+  <tr>
+    <th><%= l(:label_role) %></th>
+    <th><%= l(:label_project) %></th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <% for role in @local_roles %>
+      <tr class="<%= cycle("odd", "even") %>">
+        <td>
+          <%= link_to(h(role.name), edit_project_local_role(@project, role)) %>
+        </td>
+        <td>
+          <%= link_to role.parent_project, project_path(role.parent_project) %>
+        </td>
+        <td class="buttons">
+          <%= link_to(l(:button_delete), {:action => 'destroy', :id => role},
+                      :method => :post,
+                      :confirm => l(:text_are_you_sure),
+                      :class => 'icon icon-del') unless role.builtin? %>
+        </td>
+      </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<p><%= link_to l(:label_permissions_report), :action => 'report' %></p>

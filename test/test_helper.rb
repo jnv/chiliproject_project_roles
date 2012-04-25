@@ -6,4 +6,10 @@ require File.expand_path('../../../../test/test_helper', File.dirname(__FILE__))
 Engines::Testing.set_fixture_path
 
 # Load custom exemplars
-#Dir[File.dirname(__FILE__) + '/exemplars/*.rb'].each { |file| require file }
+Dir[File.dirname(__FILE__) + '/exemplars/*.rb'].each { |file| require file }
+
+require 'capybara/rails'
+
+class ActionController::IntegrationTest
+  include Capybara
+end

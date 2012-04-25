@@ -12,17 +12,19 @@ class ProjectsControllerTest < ActionController::TestCase
 
   context "ProjectRolesPlugin" do
     setup do
+      @project = Project.find(1)
       @request.session[:user_id] = 2 # manager
     end
 
     context "GET settings" do
       setup do
-        get :settings, :id => 1
+        LocalRole.generate_for_project! @project
+        get :settings, :id => @project
       end
 
       should_respond_with :success
       should_render_template :settings
-      should_assign_to :local_roles, :class => LocalRole
+      should_assign_to :local_roles
     end
 
 

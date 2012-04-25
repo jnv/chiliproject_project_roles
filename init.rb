@@ -25,4 +25,8 @@ Redmine::Plugin.register :chiliproject_project_roles do
   url 'https://github.com/jnv/chiliproject_project_roles'
   author_url 'https://github.com/jnv'
 
+  #permission :manage_project_roles
+  permission :manage_project_roles, {:local_roles => [:show, :new, :edit, :create, :update, :destroy]}, :require => :member
+
+
 end

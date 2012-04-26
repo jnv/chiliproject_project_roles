@@ -35,7 +35,7 @@ class LocalRolesController < ApplicationController
       redirect_to project_settings_path(@project)
     else
       @permissions = @local_role.setable_permissions
-      #@local_roles = Role.find :all, :order => 'builtin, position' #FIXME
+      @local_roles = Role.find :all, :order => 'builtin, position' #FIXME
       render :action => 'new'
     end
   end
@@ -43,7 +43,6 @@ class LocalRolesController < ApplicationController
   # GET projects/:project_id/local_roles/:id/edit
   def edit
     @permissions = @local_role.setable_permissions
-    #@local_roles = Role.find :all, :order => 'builtin, position'
   end
 
   # PUT projects/:project_id/local_roles/:id
@@ -81,7 +80,9 @@ class LocalRolesController < ApplicationController
 
   private
   def authorize_manageable
-    #TODO
+    unless @local_role.child_role_of?(@project)
+      deny_access
+    end
     true
   end
 end

@@ -1,0 +1,10 @@
+<h2>
+  <%= link_to_project_settings(@project) %> &#187;
+  <%= l :label_role_plural %> &#187;
+  <%= h @local_role %>
+</h2>
+
+<% labelled_tabular_form_for :local_role, @local_role, :url => project_local_role_path(@project, @local_role), :html => {:method => :put, :id => 'role_form'} do |f| %>
+    <%= render :partial => 'form', :locals => {:f => f} %>
+    <%= submit_tag l(:button_save) %>
+<% end %>

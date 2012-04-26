@@ -45,6 +45,7 @@ class LocalRolesControllerTest < ActionController::TestCase
 
     should_render_template :edit
     should_assign_to(:local_role) { @role }
+    should_assign_to :permissions
   end
 
   context "PUT update" do
@@ -55,6 +56,7 @@ class LocalRolesControllerTest < ActionController::TestCase
     end
 
     should "update role's properties" do
+      @role.reload
       assert_equal @role.name, 'Local Manager'
       assert_equal [:edit_project], @role.permissions
     end
@@ -71,7 +73,7 @@ class LocalRolesControllerTest < ActionController::TestCase
       role = LocalRole.find_by_name('LocalRoleWithoutWorkflowCopy')
       assert_not_nil role
       assert_equal [:add_issues, :edit_issues, :log_time], role.permissions
-      assert_not !role.assignable?
+      assert !role.assignable?
     end
 
     should_eventually "create new role with workflow copy" do
@@ -111,7 +113,7 @@ class LocalRolesControllerTest < ActionController::TestCase
   context "#authorize_manageable" do
     # Role should be manageable only in parent project
 
-    {:edit => :get, :update => :put, :remove_user => :post, :add_users => :post, :destroy => :delete}.each do |action, verb|
+    {:edit => :get, :update => :put, :report => :get, :destroy => :delete}.each do |action, verb|
       context "#{verb.to_s.upcase} #{action}" do
         setup do
           self.send verb, action, :project_id => @subproject, :id => @role

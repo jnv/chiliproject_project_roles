@@ -21,7 +21,7 @@ module ProjectRolesPlugin
         if User.current.allowed_to?(:manage_project_roles, @project)
           tabs.push({:name => 'project_roles',
                      :action => :manage_project_roles,
-                     :partial => 'projects/settings/local_roles',
+                     :partial => 'projects/settings/project_roles',
                      :label => :label_role_plural})
         end
         tabs

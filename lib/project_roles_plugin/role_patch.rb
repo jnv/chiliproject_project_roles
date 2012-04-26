@@ -7,7 +7,11 @@ module ProjectRolesPlugin
       base.class_eval do
         unloadable
 
-        default_scope :conditions => "type != 'LocalRole'"
+        # XXX ugly but effective
+        # Kudos to Jeff Paquette http://stackoverflow.com/a/1861486/240963
+        unless File.basename($0) == "rake" && ARGV.include?("db:migrate")
+          default_scope :conditions => "type != 'LocalRole'"
+        end
       end
     end
 

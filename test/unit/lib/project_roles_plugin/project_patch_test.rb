@@ -9,7 +9,7 @@ class ProjectRolesPlugin::ProjectPatchTest < ActiveSupport::TestCase
   context "Project" do
     subject { Project.new }
 
-    should_have_many :child_groups, :dependent => :destroy
+    should_have_many :child_roles, :dependent => :destroy
     #should_have_many :local_roles
   end
 

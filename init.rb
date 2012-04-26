@@ -16,6 +16,11 @@ Dispatcher.to_prepare :project_roles_plugin do
   unless ProjectsController.included_modules.include? ProjectRolesPlugin::ProjectsControllerPatch
     ProjectsController.send(:include, ProjectRolesPlugin::ProjectsControllerPatch)
   end
+
+  require_dependency 'role'
+  unless Role.included_modules.include? ProjectRolesPlugin::RolePatch
+    Role.send(:include, ProjectRolesPlugin::RolePatch)
+  end
 end
 Redmine::Plugin.register :chiliproject_project_roles do
   name 'Chiliproject Project Roles plugin'

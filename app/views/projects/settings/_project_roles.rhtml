@@ -15,16 +15,22 @@
   <% for role in @local_roles %>
       <tr class="<%= cycle("odd", "even") %>">
         <td>
-          <%= link_to(h(role.name), edit_project_local_role_path(@project, role)) %>
+          <% if role.child_role_of?(@project) %>
+              <%= link_to(h(role.name), edit_project_local_role_path(@project, role)) %>
+          <% else %>
+              <%= link_to h(group), project_local_role_path(@project, role), :class => 'icon icon-lock' %>
+          <% end %>
         </td>
         <td>
           <%= link_to role.parent_project, project_path(role.parent_project) %>
         </td>
         <td class="buttons">
-          <%= link_to(l(:button_delete), {:action => 'destroy', :id => role},
-                      :method => :post,
-                      :confirm => l(:text_are_you_sure),
-                      :class => 'icon icon-del') unless role.builtin? %>
+          <% if role.child_role_of?(@project) %>
+              <%= link_to(l(:button_delete), {:action => 'destroy', :id => role},
+                          :method => :post,
+                          :confirm => l(:text_are_you_sure),
+                          :class => 'icon icon-del') unless role.builtin? %>
+          <% end %>
         </td>
       </tr>
   <% end %>

@@ -17,7 +17,7 @@ module ProjectRolesPlugin
     module InstanceMethods
 
       def load_local_roles
-        @local_roles = @project.child_roles # FIXME
+        @local_roles = @project.local_roles
       end
     end
 

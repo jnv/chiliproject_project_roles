@@ -9,6 +9,8 @@ class LocalRolesController < ApplicationController
   before_filter :find_model_object, :except => [:new, :create] #=> @project_group
   before_filter :authorize_manageable, :except => [:new, :create, :show]
 
+  before_filter :load_local_roles, :only => [:new]
+
   # GET projects/:project_id/local_roles/show
   def show
 
@@ -18,7 +20,6 @@ class LocalRolesController < ApplicationController
   def new
     # Prefills the form with 'Non member' role permissions
     @local_role = LocalRole.new({:parent_project => @project, :permissions => Role.non_member.permissions})
-    @local_roles = Role.find :all, :order => 'builtin, position'
     @permissions = @local_role.setable_permissions
   end
 
@@ -35,7 +36,7 @@ class LocalRolesController < ApplicationController
       redirect_to project_settings_path(@project)
     else
       @permissions = @local_role.setable_permissions
-      @local_roles = Role.find :all, :order => 'builtin, position' #FIXME
+      load_local_roles
       render :action => 'new'
     end
   end
@@ -66,7 +67,7 @@ class LocalRolesController < ApplicationController
 
   # GET projects/:project_id/local_roles/report
   def report
-    @local_roles = Role.find(:all, :order => 'builtin, position')
+    @local_roles = @project.child_roles
     @permissions = Redmine::AccessControl.permissions.select { |p| !p.public? }
     if request.post?
       @roles.each do |role|
@@ -84,5 +85,9 @@ class LocalRolesController < ApplicationController
       deny_access
     end
     true
+  end
+
+  def load_local_roles
+    @local_roles = Role.find :all, :order => 'builtin, position'
   end
 end

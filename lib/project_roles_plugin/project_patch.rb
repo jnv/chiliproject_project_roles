@@ -15,7 +15,9 @@ module ProjectRolesPlugin
     end
 
     module InstanceMethods
-
+      def local_roles
+        self_and_ancestors.map(&:child_roles).flatten.uniq #FIXME this should be refactored to something effective
+      end
     end
 
   end

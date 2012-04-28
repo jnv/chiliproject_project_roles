@@ -18,7 +18,7 @@
           <% if role.child_role_of?(@project) %>
               <%= link_to(h(role.name), edit_project_local_role_path(@project, role)) %>
           <% else %>
-              <%= link_to h(group), project_local_role_path(@project, role), :class => 'icon icon-lock' %>
+              <%= link_to h(role.name), project_local_role_path(@project, role), :class => 'icon icon-lock' %>
           <% end %>
         </td>
         <td>

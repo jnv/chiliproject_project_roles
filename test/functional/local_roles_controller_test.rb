@@ -18,14 +18,21 @@ class LocalRolesControllerTest < ActionController::TestCase
     @project = Project.find(1)
     @subproject = Project.find(5) # subproject of Project 1, User 2 is manager
     @role = LocalRole.generate_for_project!(@project)
+    @role.permissions = [:edit_project]
+    @role.save!
   end
-
 
   context "GET show" do
     setup do
       get :show, :project_id => @project, :id => @role
     end
 
+    should "include permission" do
+      assert @role.has_permission?(:edit_project)
+    end
+
+    should_respond_with :success
+    should_render_template :show
     should_assign_to(:local_role) { @role }
   end
 

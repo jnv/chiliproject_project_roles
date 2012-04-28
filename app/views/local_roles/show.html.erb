@@ -1,0 +1,14 @@
+<h2>
+  <%= link_to_project_settings(@project) %> &#187;
+  <%= l :label_role_plural %> &#187;
+  <%= h @local_role %>
+</h2>
+
+<h3><%= l :label_permissions %></h3>
+<ul>
+  <% @local_role.permissions.each do |permission| %>
+      <li>
+        <%= l_or_humanize(permission, :prefix => 'permission_') %>
+      </li>
+  <% end %>
+</ul>

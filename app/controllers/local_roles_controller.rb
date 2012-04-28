@@ -9,7 +9,7 @@ class LocalRolesController < ApplicationController
   before_filter :find_model_object, :except => [:new, :create, :report]
   before_filter :authorize_manageable, :except => [:new, :create, :show, :report]
 
-  before_filter :load_local_roles, :only => [:new]
+  before_filter :load_workflow_local_roles, :only => [:new]
 
   # GET projects/:project_id/local_roles/show
   def show
@@ -36,7 +36,7 @@ class LocalRolesController < ApplicationController
       redirect_to project_settings_path(@project)
     else
       @permissions = @local_role.setable_permissions
-      load_local_roles
+      load_workflow_local_roles
       render :action => 'new'
     end
   end
@@ -66,16 +66,17 @@ class LocalRolesController < ApplicationController
   end
 
   # GET projects/:project_id/local_roles/report
+  # POST projects/:project_id/local_roles/report
   def report
     @local_roles = @project.child_roles
     @permissions = Redmine::AccessControl.permissions.select { |p| !p.public? }
     if request.post?
-      @roles.each do |role|
+      @local_roles.each do |role|
         role.permissions = params[:permissions][role.id.to_s]
         role.save
       end
       flash[:notice] = l(:notice_successful_update)
-      redirect_to :action => 'index'
+      redirect_to report_project_local_roles_path(@project)
     end
   end
 
@@ -87,7 +88,7 @@ class LocalRolesController < ApplicationController
     true
   end
 
-  def load_local_roles
+  def load_workflow_local_roles
     @local_roles = Role.find :all, :order => 'builtin, position'
   end
 end

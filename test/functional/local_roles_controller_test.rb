@@ -110,8 +110,19 @@ class LocalRolesControllerTest < ActionController::TestCase
     setup do
       get :report, :project_id => @project
     end
+    should_assign_to :permissions
     should_respond_with :success
     should_render_template :report
+  end
+
+  context "POST report" do
+    setup do
+      post :report, :project_id => @project, :permissions => {@role.id.to_s => ['add_issues', 'delete_issues']}
+    end
+
+    should "add permissions" do
+      assert_equal [:add_issues, :delete_issues], @role.reload.permissions
+    end
   end
 
   context "#authorize_manageable" do

@@ -8,11 +8,12 @@ module ProjectRolesPlugin
         unloadable
 
         named_scope :global_only, :conditions => {:type => 'Role'}
+
         # XXX When running migrations from scratch, Role.find fails due to non-existent type column
         # Kudos to Jeff Paquette http://stackoverflow.com/a/1861486/240963
-        unless File.basename($0) == "rake" && ARGV.include?("db:migrate")
-          default_scope :conditions => "type != 'LocalRole'"
-        end
+        #unless File.basename($0) == "rake" && ARGV.include?("db:migrate")
+        #  default_scope :conditions => "type != 'LocalRole'" # Removed in favour of less intrusive named_scope
+        #end
       end
     end
 

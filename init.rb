@@ -17,6 +17,11 @@ Dispatcher.to_prepare :project_roles_plugin do
     ProjectsController.send(:include, ProjectRolesPlugin::ProjectsControllerPatch)
   end
 
+  require_dependency 'roles_controller'
+  unless RolesController.included_modules.include? ProjectRolesPlugin::RolesControllerPatch
+    RolesController.send(:include, ProjectRolesPlugin::RolesControllerPatch)
+  end
+
   require_dependency 'role'
   unless Role.included_modules.include? ProjectRolesPlugin::RolePatch
     Role.send(:include, ProjectRolesPlugin::RolePatch)

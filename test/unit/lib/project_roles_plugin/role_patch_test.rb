@@ -7,20 +7,26 @@ class ProjectRolesPlugin::RolePatchTest < ActiveSupport::TestCase
   #fixtures :all
 
   context "Role" do
-    subject { Role.new }
+    subject { Role }
 
     setup do
       @global_role = Role.find(1)
       @local_role = LocalRole.generate_for_project!(Project.generate!)
     end
 
-    should "not include local role in find :all" do
-      assert_include(Role.find(:all), @global_role)
-      assert_not_include(Role.find(:all), @local_role)
+    should "include all roles" do
+      assert_include(Role.find(:all), @local_role)
     end
 
+    context "#global_only" do
+      should "include only global roles" do
+        assert_include(Role.global_only.find(:all), @global_role)
+      end
 
-
+      should "not include local role in find :all" do
+        assert_not_include(Role.global_only.find(:all), @local_role)
+      end
+    end
   end
 
 end

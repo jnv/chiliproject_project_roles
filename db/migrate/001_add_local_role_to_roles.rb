@@ -1,13 +1,13 @@
 class AddLocalRoleToRoles < ActiveRecord::Migration
   def self.up
     change_table :roles do |t|
-      t.string :type, :limit => 30, :default => "", :null => false
+      t.string :type, :limit => 30, :default => "Role", :null => false
       t.integer :local_role_project_id
     end
     add_index :roles, [:id, :type]
     add_index :roles, :local_role_project_id
 
-    Role.update_all("type = 'Role'", "type = ''")
+    #Role.update_all("type = 'Role'", "type = ''")
   end
 
   def self.down

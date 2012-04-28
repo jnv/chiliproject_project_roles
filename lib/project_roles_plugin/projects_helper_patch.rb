@@ -7,7 +7,10 @@ module ProjectRolesPlugin
       base.send(:include, InstanceMethods)
       base.class_eval do
         unloadable
+        include ChiliprojectMembersView::ProjectsHelperPatch
         alias_method_chain :project_settings_tabs, :project_roles
+        alias_method_chain :load_roles, :project_roles
+
       end
     end
 
@@ -25,6 +28,11 @@ module ProjectRolesPlugin
                      :label => :label_role_plural})
         end
         tabs
+      end
+
+      def load_roles_with_project_roles(project)
+        roles = load_roles_without_project_roles(project)
+        project.local_roles + roles
       end
     end
 

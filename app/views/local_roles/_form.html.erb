@@ -21,12 +21,12 @@
         <legend><%= mod.blank? ? l(:label_project) : l_or_humanize(mod, :prefix => 'project_module_') %></legend>
         <% perms_by_module[mod].each do |permission| %>
             <label class="floating">
-              <%= check_box_tag 'role[permissions][]', permission.name, (@local_role.permissions.include? permission.name) %>
+              <%= check_box_tag 'local_role[permissions][]', permission.name, (@local_role.permissions.include? permission.name) %>
               <%= l_or_humanize(permission.name, :prefix => 'permission_') %>
             </label>
         <% end %>
       </fieldset>
   <% end %>
   <br/><%= check_all_links 'permissions' %>
-  <%= hidden_field_tag 'role[permissions][]', '' %>
+  <%= hidden_field_tag 'local_role[permissions][]', '' %>
 </div>

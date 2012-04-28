@@ -22,6 +22,15 @@ class MembersControllerTest < ActionController::TestCase
         assert_redirected_to '/projects/ecookbook/settings/members'
         assert User.find(7).member_of?(Project.find(1))
       end
+
+      should "not add member if role is not available in the project" do
+        root_project = Project.find(2)
+        assert !root_project.is_descendant_of?(Project.find(1))
+        assert_not_include root_project.local_roles, @role
+        assert_no_difference 'Member.count' do
+          post :new, :id => root_project.id, :member => {:role_ids => [@role.id], :user_id => 7}
+        end
+      end
     end
 
 

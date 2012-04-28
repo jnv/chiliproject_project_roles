@@ -7,6 +7,11 @@ Dispatcher.to_prepare :project_roles_plugin do
     Project.send(:include, ProjectRolesPlugin::ProjectPatch)
   end
 
+  require_dependency 'role'
+  unless Role.included_modules.include? ProjectRolesPlugin::RolePatch
+    Role.send(:include, ProjectRolesPlugin::RolePatch)
+  end
+
   require_dependency 'projects_helper'
   unless ProjectsHelper.included_modules.include? ProjectRolesPlugin::ProjectsHelperPatch
     ProjectsHelper.send(:include, ProjectRolesPlugin::ProjectsHelperPatch)
@@ -22,10 +27,11 @@ Dispatcher.to_prepare :project_roles_plugin do
     RolesController.send(:include, ProjectRolesPlugin::RolesControllerPatch)
   end
 
-  require_dependency 'role'
-  unless Role.included_modules.include? ProjectRolesPlugin::RolePatch
-    Role.send(:include, ProjectRolesPlugin::RolePatch)
-  end
+  require_dependency 'members_controller'
+    unless MembersController.included_modules.include? ProjectRolesPlugin::MembersControllerPatch
+      MembersController.send(:include, ProjectRolesPlugin::MembersControllerPatch)
+    end
+
 end
 Redmine::Plugin.register :chiliproject_project_roles do
   name 'Chiliproject Project Roles plugin'

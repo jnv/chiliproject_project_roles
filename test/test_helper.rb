@@ -11,5 +11,5 @@ Dir[File.dirname(__FILE__) + '/exemplars/*.rb'].each { |file| require file }
 require 'capybara/rails'
 
 class ActionController::IntegrationTest
-  include Capybara
+  include Capybara::DSL
 end

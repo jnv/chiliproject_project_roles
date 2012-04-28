@@ -3,7 +3,7 @@ require File.expand_path('../../../../test_helper', __FILE__)
 
 require_dependency 'principal'
 class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
-  fixtures :users, :members, :projects, :roles, :member_roles, :auth_sources
+  fixtures :all
 
   def setup
     @admin = Principal.find(1)

@@ -107,13 +107,17 @@ class LocalRolesControllerTest < ActionController::TestCase
   end
 
   context "GET report" do
-
+    setup do
+      get :report, :project_id => @project
+    end
+    should_respond_with :success
+    should_render_template :report
   end
 
   context "#authorize_manageable" do
     # Role should be manageable only in parent project
 
-    {:edit => :get, :update => :put, :report => :get, :destroy => :delete}.each do |action, verb|
+    {:edit => :get, :update => :put, :destroy => :delete}.each do |action, verb|
       context "#{verb.to_s.upcase} #{action}" do
         setup do
           self.send verb, action, :project_id => @subproject, :id => @role
@@ -122,7 +126,7 @@ class LocalRolesControllerTest < ActionController::TestCase
       end
     end
 
-    {:show => :get, :new => :get, :create => :post}.each do |action, verb|
+    {:show => :get, :new => :get, :create => :post, :report => :get}.each do |action, verb|
       context "#{verb.to_s.upcase} #{action}" do
         setup do
           self.send verb, action, :project_id => @subproject, :id => @role

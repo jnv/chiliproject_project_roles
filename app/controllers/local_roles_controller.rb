@@ -6,8 +6,8 @@ class LocalRolesController < ApplicationController
   model_object LocalRole
   before_filter :find_project_by_project_id
   before_filter :authorize
-  before_filter :find_model_object, :except => [:new, :create] #=> @project_group
-  before_filter :authorize_manageable, :except => [:new, :create, :show]
+  before_filter :find_model_object, :except => [:new, :create, :report]
+  before_filter :authorize_manageable, :except => [:new, :create, :show, :report]
 
   before_filter :load_local_roles, :only => [:new]
 

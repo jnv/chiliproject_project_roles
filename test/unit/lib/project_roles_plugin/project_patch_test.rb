@@ -6,7 +6,7 @@ class ProjectRolesPlugin::ProjectPatchTest < ActiveSupport::TestCase
 
   fixtures :all
 
-  context "Project" do
+  context "ProjectRolesPlugin" do
     subject { Project.new }
 
     should_have_many :child_roles, :dependent => :destroy

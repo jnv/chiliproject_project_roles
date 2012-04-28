@@ -17,6 +17,11 @@ Dispatcher.to_prepare :project_roles_plugin do
     Member.send(:include, ProjectRolesPlugin::MemberPatch)
   end
 
+  require_dependency 'principal'
+  unless Principal.included_modules.include? ProjectRolesPlugin::PrincipalPatch
+    Principal.send(:include, ProjectRolesPlugin::PrincipalPatch)
+  end
+
   require_dependency 'projects_helper'
   unless ProjectsHelper.included_modules.include? ProjectRolesPlugin::ProjectsHelperPatch
     ProjectsHelper.send(:include, ProjectRolesPlugin::ProjectsHelperPatch)

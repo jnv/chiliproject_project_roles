@@ -8,6 +8,10 @@ module ProjectRolesPlugin
       base.class_eval do
         unloadable
         has_many :child_roles, :foreign_key => 'local_role_project_id', :class_name => 'LocalRole', :dependent => :destroy
+
+        has_many :role_shifts, :dependent => :destroy
+        has_one :nonmember_role, :conditions => ['role_shifts.builtin = ?', Role::BUILTIN_NON_MEMBER]
+        has_one :anonymous_role, :conditions => ['role_shifts.builtin = ?', Role::BUILTIN_ANONYMOUS]
       end
     end
 

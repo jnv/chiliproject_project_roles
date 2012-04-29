@@ -1,4 +1,5 @@
 Project Roles plugin for ChiliProject. Copyright 2012 Jan Vlnas.
+Role shifting functionality based on Role Shift plugin. Copyright Andriy Lesyuk.
 Parts of code are directly based on ChiliProject. ChiliProject is Copyright ChiliProject Team.
 ChiliProject is a fork based on Redmine. Redmine is Copyright Jean-Philippe Lang and others.
 

@@ -8,4 +8,5 @@ class RoleShift < ActiveRecord::Base
   validates_presence_of :project, :role
   validates_inclusion_of :builtin, :in => [Role::BUILTIN_ANONYMOUS, Role::BUILTIN_NON_MEMBER]
 
+  attr_readonly :project, :builtin
 end

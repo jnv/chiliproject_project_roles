@@ -11,9 +11,10 @@ class ProjectRolesPlugin::ProjectPatchTest < ActiveSupport::TestCase
 
     should_have_many :child_roles, :dependent => :destroy
     #should_have_many :local_roles
+    should_have_one :nonmember_role
+    should_have_one :anonymous_role
 
     context "#local_roles" do
-
       # +-1
       #   `--3
       #    --4

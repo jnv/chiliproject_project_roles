@@ -7,6 +7,7 @@ module ProjectRolesPlugin
       base.class_eval do
         unloadable
         alias_method_chain :allowed_to?, :project_roles
+        alias_method_chain :roles_for_project, :project_roles
       end
     end
 
@@ -31,6 +32,16 @@ module ProjectRolesPlugin
         end
 
         allowed_to_without_project_roles?(action, context, options)
+      end
+
+      # Loads project-specific role shifts for anonymous and non-member users
+      def roles_for_project_with_project_roles(project)
+        if logged?
+          @role_non_member = project.role_non_member || Role.non_member
+        else
+          @role_anonymous = project.role_anonymous || Role.anonymous
+        end
+        roles_for_project_without_project_roles(project)
       end
 
     end

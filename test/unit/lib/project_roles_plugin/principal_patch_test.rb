@@ -10,6 +10,7 @@ class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
     @jsmith = Principal.find(2)
     @dlopper = Principal.find(3)
     @rhill = Principal.find(4) # rhill has no memberships anywhere
+    @anonymous = User.find(6)
   end
 
   # Taken from UserTest
@@ -97,7 +98,7 @@ class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
 
     context "#roles_for_project" do
       setup do
-        @project = Project.find(2)
+        @project = Project.find(5)
         @local_role = LocalRole.generate_for_project!(@project) do |role|
           role.permissions = [:add_project, :view_issues, :add_issues]
         end
@@ -114,6 +115,24 @@ class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
 
       should "not assign any role for non-member" do
         assert_nil @dlopper.roles_for_project(Project.find(2)).detect { |role| role.member? }
+      end
+
+      should "assign standard builtin role without shifts" do
+        roles = @anonymous.roles_for_project(Project.find(1))
+        assert roles.size == 1
+        assert_equal "Anonymous", roles.first.name
+      end
+
+      should "assign shifted anonymous role" do
+        roles = @anonymous.roles_for_project(@project)
+        assert_equal roles.size, 1
+        assert_equal @local_role.id, roles.first.id
+      end
+
+      should "assign shifted non-member role" do
+        roles = @rhill.roles_for_project(@project)
+        assert_equal roles.size, 1
+        assert_equal @local_role.id, roles.first.id
       end
 
     end

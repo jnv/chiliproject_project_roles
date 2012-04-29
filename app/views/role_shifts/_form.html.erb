@@ -1,0 +1,19 @@
+<% role_shifts = @project.role_shifts.group_by(&:builtin) %>
+<% builtins = {Role::BUILTIN_ANONYMOUS => :label_user_anonymous, Role::BUILTIN_NON_MEMBER => :label_user_non_member} %>
+<% selectable_roles = load_roles_with_project_roles(@project) %>
+
+<% form_for(:role_shifts, :url => project_role_shifts_path(@project)) do |f| %>
+    <fieldset class="tabular">
+      <legend><%= l :label_builtin_roles %></legend>
+      <% builtins.each do |builtin, label| %>
+          <% role = role_shifts[builtin].try(:role) %>
+          <p>
+            <%= f.label builtin, l(label) %>
+            <%= f.collection_select(builtin, selectable_roles, :id, :name, {:include_blank => true}) %>
+            <%#= select_tag("role_shifts[#{builtin}][role]", options_from_collection_for_select([nil, nil] + selectable_roles, :id, :name, role.try(:id))) %>
+          </p>
+      <% end %>
+
+      <p><%= submit_tag l(:button_save) %></p>
+    </fieldset>
+<% end %>

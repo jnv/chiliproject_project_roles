@@ -89,6 +89,6 @@ class LocalRolesController < ApplicationController
   end
 
   def load_workflow_local_roles
-    @local_roles = Role.find :all, :order => 'builtin, position'
+    @local_roles = Role.available_for_project(@project).find(:all, :order => 'builtin, position') # XXX includes builtin
   end
 end

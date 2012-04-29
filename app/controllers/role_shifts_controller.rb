@@ -14,7 +14,7 @@ class RoleShiftsController < ApplicationController
           @role_shift.destroy unless @role_shift.new_record?
           next
         end
-        @role_shift.role = Role.find(role_id) #FIXME use @project.available_roles.find
+        @role_shift.role = @project.available_roles.find(role_id)
         @role_shift.save
       end
     end

@@ -31,6 +31,7 @@ module ProjectRolesPlugin
       end
 
       def load_roles_with_project_roles(project)
+        #XXX could be handled by Project#available_roles but that would break the chain
         roles = load_roles_without_project_roles(project)
         project.local_roles + roles
       end

@@ -5,7 +5,7 @@ class CreateRoleShifts < ActiveRecord::Migration
       t.integer :role_id, :null => false
       t.integer :builtin, :default => 0, :null => false
     end
-    add_index :role_shifts, [:project_id, :role_id, :builtin], :unique => true
+    add_index :role_shifts, [:project_id, :builtin], :unique => true
   end
 
   def self.down

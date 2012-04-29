@@ -9,7 +9,7 @@ class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
     @admin = Principal.find(1)
     @jsmith = Principal.find(2)
     @dlopper = Principal.find(3)
-    @rhill = Principal.find(4)
+    @rhill = Principal.find(4) # rhill has no memberships anywhere
   end
 
   # Taken from UserTest
@@ -81,9 +81,9 @@ class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
       setup do
         @global_role = Role.find(1)
         @project = Project.find(1)
-        @local_role = LocalRole.generate_for_project!(@project)
-        @local_role.permissions = [:add_project, :view_issues, :add_issues]
-        @local_role.save!
+        @local_role = LocalRole.generate_for_project!(@project) do |role|
+          role.permissions = [:add_project, :view_issues, :add_issues]
+        end
 
         @project.members << Member.new(:role_ids => [@local_role.id], :user_id => @rhill.id) # rhill has no memberships anywhere
 
@@ -95,7 +95,28 @@ class ProjectRolesPlugin::PrincipalPatchTest < ActiveSupport::TestCase
 
     end
 
+    context "#roles_for_project" do
+      setup do
+        @project = Project.find(2)
+        @local_role = LocalRole.generate_for_project!(@project) do |role|
+          role.permissions = [:add_project, :view_issues, :add_issues]
+        end
+        @project.role_shifts.create!({:role => @local_role, :builtin => Role::BUILTIN_ANONYMOUS})
+        @project.role_shifts.create!({:role => @local_role, :builtin => Role::BUILTIN_NON_MEMBER})
+      end
 
+      should "assign user's role" do
+        # user with a role
+        roles = @jsmith.roles_for_project(Project.find(1))
+        assert_kind_of Role, roles.first
+        assert_equal "Manager", roles.first.name
+      end
+
+      should "not assign any role for non-member" do
+        assert_nil @dlopper.roles_for_project(Project.find(2)).detect { |role| role.member? }
+      end
+
+    end
   end
 
 end

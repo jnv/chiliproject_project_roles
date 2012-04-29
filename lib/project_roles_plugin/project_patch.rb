@@ -8,6 +8,9 @@ module ProjectRolesPlugin
       base.class_eval do
         unloadable
         has_many :child_roles, :foreign_key => 'local_role_project_id', :class_name => 'LocalRole', :dependent => :destroy
+        #has_many :local_roles, :class_name => 'LocalRole', :readonly => true, :conditions => [
+        #    "projects.lft <= ? AND projects.rgt >= ?", self.left, self.right
+        #]
 
         has_many :role_shifts, :dependent => :destroy do
           def by_builtin
@@ -26,7 +29,7 @@ module ProjectRolesPlugin
 
     module InstanceMethods
       def local_roles
-        self_and_ancestors.map(&:child_roles).flatten.uniq #FIXME this should be refactored to something effective
+        LocalRole.available_for_project(self)
       end
 
       def role_anonymous

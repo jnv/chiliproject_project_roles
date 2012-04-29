@@ -32,8 +32,17 @@ class ProjectRolesPlugin::ProjectPatchTest < ActiveSupport::TestCase
         assert_include(@root.local_roles, @root_role)
       end
 
+
       should "include ancestors' roles" do
         assert_include(@subproject.local_roles, @root_role)
+      end
+
+      should "return same result as child_roles map" do
+        reference = @root.self_and_ancestors.map(&:child_roles).flatten.uniq
+        assert_same_elements reference, @root.local_roles
+
+        reference = @subproject.self_and_ancestors.map(&:child_roles).flatten.uniq
+        assert_same_elements reference, @subproject.local_roles
       end
     end
 
@@ -69,7 +78,7 @@ class ProjectRolesPlugin::ProjectPatchTest < ActiveSupport::TestCase
         subject { @project.role_anonymous }
 
         should "have permissions" do
-          assert_not_empty  subject.permissions
+          assert_not_empty subject.permissions
         end
 
         should "not have logged-in only permissions" do

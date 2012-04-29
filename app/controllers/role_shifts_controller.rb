@@ -10,7 +10,7 @@ class RoleShiftsController < ApplicationController
     if request.post? and params[:role_shifts]
       params[:role_shifts].each do |builtin, role_id|
         @role_shift = @project.role_shifts.find_or_initialize_by_builtin(builtin)
-        if role_id.empty?
+        if role_id.blank?
           @role_shift.destroy unless @role_shift.new_record?
           next
         end

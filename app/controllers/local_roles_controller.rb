@@ -1,7 +1,8 @@
 class LocalRolesController < ApplicationController
   unloadable
 
-  include LocalRolesHelper
+  helper :project_roles
+  include ProjectRolesHelper
 
   model_object LocalRole
   before_filter :find_project_by_project_id

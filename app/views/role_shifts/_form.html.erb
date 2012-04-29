@@ -1,4 +1,4 @@
-<% role_shifts = @project.role_shifts.group_by(&:builtin) %>
+<% role_shifts = @project.role_shifts.by_builtin %>
 <% builtins = {Role::BUILTIN_ANONYMOUS => :label_user_anonymous, Role::BUILTIN_NON_MEMBER => :label_user_non_member} %>
 <% selectable_roles = load_roles_with_project_roles(@project) %>
 
@@ -9,7 +9,7 @@
           <% role = role_shifts[builtin].try(:role) %>
           <p>
             <%= f.label builtin, l(label) %>
-            <%= f.collection_select(builtin, selectable_roles, :id, :name, {:include_blank => true}) %>
+            <%= f.collection_select(builtin, selectable_roles, :id, :name, {:selected => role.try(:id), :include_blank => true}) %>
             <%#= select_tag("role_shifts[#{builtin}][role]", options_from_collection_for_select([nil, nil] + selectable_roles, :id, :name, role.try(:id))) %>
           </p>
       <% end %>

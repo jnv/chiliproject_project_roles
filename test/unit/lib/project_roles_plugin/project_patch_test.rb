@@ -37,12 +37,37 @@ class ProjectRolesPlugin::ProjectPatchTest < ActiveSupport::TestCase
         assert_include(@subproject.local_roles, @root_role)
       end
 
-      should "return same result as child_roles map" do
+      should "return same result as mapping to child_roles" do
         reference = @root.self_and_ancestors.map(&:child_roles).flatten.uniq
         assert_same_elements reference, @root.local_roles
 
         reference = @subproject.self_and_ancestors.map(&:child_roles).flatten.uniq
         assert_same_elements reference, @subproject.local_roles
+      end
+    end
+
+    context "#avaliable_roles" do
+      setup do
+        @root = Project.find 1
+        @subproject = Project.find 6
+        @root_role = LocalRole.generate_for_project!(@root)
+        @subproject_role = LocalRole.generate_for_project!(@subproject)
+      end
+
+      subject { @subproject.available_roles }
+
+      should "include both global and inherited roles" do
+        reference = (Role.givable.global_only | @subproject.local_roles).map(&:id)
+        assert_equal reference.size, subject.size
+        assert_same_elements reference, subject.map(&:id)
+      end
+
+      should "find inherited local roles" do
+        assert_not_nil subject.find(@root_role.id)
+      end
+
+      should "find own local roles" do
+        assert_not_nil subject.find(@subproject_role.id)
       end
     end
 

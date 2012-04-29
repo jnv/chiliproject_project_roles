@@ -9,6 +9,13 @@ module ProjectRolesPlugin
 
         named_scope :global_only, :conditions => {:type => 'Role'}
 
+        named_scope :available_for_project, lambda { |project|
+          {
+              :joins => "LEFT OUTER JOIN projects ON roles.local_role_project_id = projects.id",
+              :conditions => ["roles.type = 'Role' OR (roles.type = 'LocalRole' AND projects.lft <= ? AND projects.rgt >= ?)", project.left, project.right]
+          }
+        }
+
         # XXX When running migrations from scratch, Role.find fails due to non-existent type column
         # Kudos to Jeff Paquette http://stackoverflow.com/a/1861486/240963
         #unless File.basename($0) == "rake" && ARGV.include?("db:migrate")

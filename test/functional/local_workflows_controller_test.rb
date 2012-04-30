@@ -272,5 +272,3 @@ class LocalWorkflowsControllerTest < ActionController::TestCase
   end
 
 end
-
-end

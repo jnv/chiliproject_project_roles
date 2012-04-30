@@ -108,65 +108,87 @@ class LocalWorkflowsControllerTest < ActionController::TestCase
   end
 
   context "POST edit" do
+
     setup do
-      post :edit, :role_id => 2, :tracker_id => 1,
-           :issue_status => {
-               '4' => {'5' => ['always']},
-               '3' => {'1' => ['always'], '2' => ['always']}
-           }
+      @tracker_id = 1
+      @role_id = 2
+    end
+
+    context "basic" do
+      setup do
+        post :edit, :project_id => @project,
+             :role_id => @role_id, :tracker_id => @tracker_id,
+             :issue_status => {
+                 '4' => {'5' => ['always']},
+                 '3' => {'1' => ['always'], '2' => ['always']}
+             }
+      end
+
+      should "create workflows" do
+        assert_redirected_to :controller => "local_workflows", :action => "edit", :tracker_id => @tracker_id, :role_id => @role_id
+        assert_equal 3, Workflow.count(:conditions => {:tracker_id => @tracker_id, :role_id => @role_id})
+        assert_not_nil Workflow.find(:first, :conditions => {:role_id => @role_id, :tracker_id => @tracker_id, :old_status_id => 3, :new_status_id => 2})
+        assert_nil Workflow.find(:first, :conditions => {:role_id => @role_id, :tracker_id => @tracker_id, :old_status_id => 5, :new_status_id => 4})
+      end
+    end
+
+    context "with additional transitions" do
+
+      setup do
+        post :edit, :project_id => @project,
+             :role_id => @role_id, :tracker_id => @tracker_id,
+             :issue_status => {
+                 '4' => {'5' => ['always']},
+                 '3' => {'1' => ['author'], '2' => ['assignee'], '4' => ['author', 'assignee']}
+             }
+      end
+
+      should "create workflows" do
+        assert_redirected_to :controller => "local_workflows", :action => "edit", :tracker_id => @tracker_id, :role_id => @role_id
+        assert_equal 4, Workflow.count(:conditions => {:tracker_id => @tracker_id, :role_id => @role_id})
+      end
+
+      should "assign transitions" do
+        w = Workflow.find(:first, :conditions => {:role_id => @role_id, :tracker_id => @tracker_id, :old_status_id => 4, :new_status_id => 5})
+        assert !w.author
+        assert !w.assignee
+
+        w = Workflow.find(:first, :conditions => {:role_id => @role_id, :tracker_id => @tracker_id, :old_status_id => 3, :new_status_id => 1})
+        assert w.author
+        assert !w.assignee
+        w = Workflow.find(:first, :conditions => {:role_id => @role_id, :tracker_id => @tracker_id, :old_status_id => 3, :new_status_id => 2})
+        assert !w.author
+        assert w.assignee
+        w = Workflow.find(:first, :conditions => {:role_id => @role_id, :tracker_id => @tracker_id, :old_status_id => 3, :new_status_id => 4})
+        assert w.author
+        assert w.assignee
+      end
+
+      context "without POST data" do
+
+        should "clear workflow" do
+          assert Workflow.count(:conditions => {:tracker_id => @tracker_id, :role_id => @role_id}) > 0
+          post :edit, :role_id => @role_id, :tracker_id => @tracker_id
+          assert_equal 0, Workflow.count(:conditions => {:tracker_id => @tracker_id, :role_id => @role_id})
+        end
+      end
     end
   end
 
+  context "GET copy" do
+    setup do
+      get :copy
+    end
 
-  def test_post_edit
-    post :edit, :role_id => 2, :tracker_id => 1,
-         :issue_status => {
-             '4' => {'5' => ['always']},
-             '3' => {'1' => ['always'], '2' => ['always']}
-         }
-    assert_redirected_to '/workflows/edit?role_id=2&tracker_id=1'
-
-    assert_equal 3, Workflow.count(:conditions => {:tracker_id => 1, :role_id => 2})
-    assert_not_nil Workflow.find(:first, :conditions => {:role_id => 2, :tracker_id => 1, :old_status_id => 3, :new_status_id => 2})
-    assert_nil Workflow.find(:first, :conditions => {:role_id => 2, :tracker_id => 1, :old_status_id => 5, :new_status_id => 4})
+    should_respond_with :success
+    should_render_template :copy
   end
 
-  def test_post_edit_with_additional_transitions
-    post :edit, :role_id => 2, :tracker_id => 1,
-         :issue_status => {
-             '4' => {'5' => ['always']},
-             '3' => {'1' => ['author'], '2' => ['assignee'], '4' => ['author', 'assignee']}
-         }
-    assert_redirected_to '/workflows/edit?role_id=2&tracker_id=1'
+  context "POST copy" do
 
-    assert_equal 4, Workflow.count(:conditions => {:tracker_id => 1, :role_id => 2})
 
-    w = Workflow.find(:first, :conditions => {:role_id => 2, :tracker_id => 1, :old_status_id => 4, :new_status_id => 5})
-    assert !w.author
-    assert !w.assignee
-    w = Workflow.find(:first, :conditions => {:role_id => 2, :tracker_id => 1, :old_status_id => 3, :new_status_id => 1})
-    assert w.author
-    assert !w.assignee
-    w = Workflow.find(:first, :conditions => {:role_id => 2, :tracker_id => 1, :old_status_id => 3, :new_status_id => 2})
-    assert !w.author
-    assert w.assignee
-    w = Workflow.find(:first, :conditions => {:role_id => 2, :tracker_id => 1, :old_status_id => 3, :new_status_id => 4})
-    assert w.author
-    assert w.assignee
   end
 
-  def test_clear_workflow
-    assert Workflow.count(:conditions => {:tracker_id => 1, :role_id => 2}) > 0
-
-    post :edit, :role_id => 2, :tracker_id => 1
-    assert_equal 0, Workflow.count(:conditions => {:tracker_id => 1, :role_id => 2})
-  end
-
-  def test_get_copy
-    get :copy
-    assert_response :success
-    assert_template 'copy'
-  end
 
   def test_post_copy_one_to_one
     source_transitions = status_transitions(:tracker_id => 1, :role_id => 2)

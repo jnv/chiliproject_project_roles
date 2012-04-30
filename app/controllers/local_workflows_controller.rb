@@ -17,7 +17,7 @@ class LocalWorkflowsController < ApplicationController
     @role = @project.child_roles.find_by_id(params[:role_id])
     @tracker = @project.trackers.find_by_id(params[:tracker_id])
 
-    if request.post?
+    if request.post? && @role && @tracker
       Workflow.destroy_all(["role_id=? and tracker_id=?", @role.id, @tracker.id])
       #@role.workflows.find_by_tracker_id(@role.id).destroy_all
       (params[:issue_status] || []).each do |status_id, transitions|

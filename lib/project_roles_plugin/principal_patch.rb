@@ -18,7 +18,8 @@ module ProjectRolesPlugin
 
       # Intercepts global authorization (options[:global])
       def allowed_to_with_project_roles?(action, context, options={})
-        if options[:global]
+        # XXX API tests sometimes call global authorization with context
+        if options[:global] and !context.is_a?(Project) and !context.is_a?(Array)
           # Admin users are always authorized
           return true if admin?
 

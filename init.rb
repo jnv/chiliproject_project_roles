@@ -49,6 +49,7 @@ Redmine::Plugin.register :chiliproject_project_roles do
   #permission :manage_project_roles
   permission :manage_project_roles, {:local_roles => [:show, :new, :edit, :create, :update, :destroy, :report]}, :require => :member
   permission :manage_role_shifts, {:role_shifts => [:update]}, :require => :member
+  permission :manage_local_workflows, {:local_workflows => [:index, :edit, :copy]}, :require => :member
 
 
 end

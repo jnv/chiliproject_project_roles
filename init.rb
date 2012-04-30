@@ -22,6 +22,11 @@ Dispatcher.to_prepare :project_roles_plugin do
     Principal.send(:include, ProjectRolesPlugin::PrincipalPatch)
   end
 
+  require_dependency 'workflow'
+  unless Workflow.included_modules.include? ProjectRolesPlugin::WorkflowPatch
+    Workflow.send(:include, ProjectRolesPlugin::WorkflowPatch)
+  end
+
   require_dependency 'projects_helper'
   unless ProjectsHelper.included_modules.include? ProjectRolesPlugin::ProjectsHelperPatch
     ProjectsHelper.send(:include, ProjectRolesPlugin::ProjectsHelperPatch)

@@ -29,11 +29,10 @@ module ProjectRolesPlugin
         end
 
         if User.current.allowed_to?(:manage_local_workflows, @project)
-          tabs.push({:name => 'local_workflows'},
-                    :action => :manage_local_workflows,
-                    :partial => 'projects/settings/local_workflows',
-                    :label => :label_workflow
-          )
+          tabs.push({:name => 'local_workflows',
+                     :action => :manage_local_workflows,
+                     :partial => 'projects/settings/local_workflows',
+                     :label => :label_workflow})
         end
         tabs
       end

@@ -111,7 +111,7 @@ class LocalWorkflowsControllerTest < ActionController::TestCase
 
     setup do
       @tracker_id = 1
-      @role_id = 2
+      @role_id = @role.id
     end
 
     context "basic" do
@@ -168,65 +168,109 @@ class LocalWorkflowsControllerTest < ActionController::TestCase
 
         should "clear workflow" do
           assert Workflow.count(:conditions => {:tracker_id => @tracker_id, :role_id => @role_id}) > 0
-          post :edit, :role_id => @role_id, :tracker_id => @tracker_id
+          post :edit, :project_id => @project, :role_id => @role_id, :tracker_id => @tracker_id
           assert_equal 0, Workflow.count(:conditions => {:tracker_id => @tracker_id, :role_id => @role_id})
         end
       end
+    end
+
+    context "with global role" do
+
+      should "not do any changes" do
+        assert Workflow.count(:conditions => {:tracker_id => 1, :role_id => 2}) > 0
+        assert_no_difference "Workflow.count" do
+          post :edit, :project_id => @project, :tracker_id => 1, :role_id => 2
+        end
+        assert_response 200 # role was not found, nothing happens
+      end
+
     end
   end
 
   context "GET copy" do
     setup do
-      get :copy
+      get :copy, :project_id => @project
     end
 
     should_respond_with :success
     should_render_template :copy
+
   end
 
   context "POST copy" do
 
+    # Returns an array of status transitions that can be compared
+    def status_transitions(conditions)
+      Workflow.find(:all, :conditions => conditions,
+                    :order => 'tracker_id, role_id, old_status_id, new_status_id').collect { |w| [w.old_status, w.new_status_id] }
+    end
 
+    setup do
+      @tracker_id = 1
+      @source_role_id = @role.id
+      @tr1 = LocalRole.generate_for_project!(@project).id
+      @tr2 = LocalRole.generate_for_project!(@project).id
+    end
+
+    should "copy one to one" do
+      source_transitions = status_transitions(:tracker_id => 1, :role_id => @source_role_id)
+
+      post :copy, :project_id => @project,
+           :source_tracker_id => 1, :source_role_id => @source_role_id,
+           :target_tracker_ids => [3], :target_role_ids => [@tr1]
+      assert_response 302
+      assert_equal source_transitions, status_transitions(:tracker_id => 3, :role_id => @tr1)
+    end
+
+    should "copy one to many" do
+      source_transitions = status_transitions(:tracker_id => 1, :role_id => @source_role_id)
+
+      post :copy, :project_id => @project,
+           :source_tracker_id => 1, :source_role_id => @source_role_id,
+           :target_tracker_ids => [2, 3], :target_role_ids => [@tr1, @tr2]
+      assert_response 302
+      assert_equal source_transitions, status_transitions(:tracker_id => 2, :role_id => @tr1)
+      assert_equal source_transitions, status_transitions(:tracker_id => 3, :role_id => @tr1)
+      assert_equal source_transitions, status_transitions(:tracker_id => 2, :role_id => @tr2)
+      assert_equal source_transitions, status_transitions(:tracker_id => 3, :role_id => @tr2)
+    end
+
+    should "copy many to many" do
+      source_t2 = status_transitions(:tracker_id => 2, :role_id => @source_role_id)
+      source_t3 = status_transitions(:tracker_id => 3, :role_id => @source_role_id)
+
+      post :copy, :project_id => @project,
+           :source_tracker_id => 'any', :source_role_id => @source_role_id,
+           :target_tracker_ids => [2, 3], :target_role_ids => [@tr1, @tr2]
+      assert_response 302
+      assert_equal source_t2, status_transitions(:tracker_id => 2, :role_id => @tr1)
+      assert_equal source_t3, status_transitions(:tracker_id => 3, :role_id => @tr1)
+      assert_equal source_t2, status_transitions(:tracker_id => 2, :role_id => @tr2)
+      assert_equal source_t3, status_transitions(:tracker_id => 3, :role_id => @tr2)
+    end
+
+    context "global role" do
+      setup do
+        Workflow.any_instance.expects(:copy).never
+      end
+
+      should "not be found as source" do
+        post :copy, :project_id => @project,
+             :source_tracker_id => 'any', :source_role_id => 2,
+             :target_tracker_ids => [2, 3], :target_role_ids => [@tr1, @tr2]
+        assert_response 404
+      end
+
+      should "not be affected as target" do
+        post :copy, :project_id => @project,
+             :source_tracker_id => 'any', :source_role_id => @source_role_id,
+             :target_tracker_ids => [2, 3], :target_role_ids => [2]
+        assert_response 404
+      end
+
+    end
   end
 
+end
 
-  def test_post_copy_one_to_one
-    source_transitions = status_transitions(:tracker_id => 1, :role_id => 2)
-
-    post :copy, :source_tracker_id => '1', :source_role_id => '2',
-         :target_tracker_ids => ['3'], :target_role_ids => ['1']
-    assert_response 302
-    assert_equal source_transitions, status_transitions(:tracker_id => 3, :role_id => 1)
-  end
-
-  def test_post_copy_one_to_many
-    source_transitions = status_transitions(:tracker_id => 1, :role_id => 2)
-
-    post :copy, :source_tracker_id => '1', :source_role_id => '2',
-         :target_tracker_ids => ['2', '3'], :target_role_ids => ['1', '3']
-    assert_response 302
-    assert_equal source_transitions, status_transitions(:tracker_id => 2, :role_id => 1)
-    assert_equal source_transitions, status_transitions(:tracker_id => 3, :role_id => 1)
-    assert_equal source_transitions, status_transitions(:tracker_id => 2, :role_id => 3)
-    assert_equal source_transitions, status_transitions(:tracker_id => 3, :role_id => 3)
-  end
-
-  def test_post_copy_many_to_many
-    source_t2 = status_transitions(:tracker_id => 2, :role_id => 2)
-    source_t3 = status_transitions(:tracker_id => 3, :role_id => 2)
-
-    post :copy, :source_tracker_id => 'any', :source_role_id => '2',
-         :target_tracker_ids => ['2', '3'], :target_role_ids => ['1', '3']
-    assert_response 302
-    assert_equal source_t2, status_transitions(:tracker_id => 2, :role_id => 1)
-    assert_equal source_t3, status_transitions(:tracker_id => 3, :role_id => 1)
-    assert_equal source_t2, status_transitions(:tracker_id => 2, :role_id => 3)
-    assert_equal source_t3, status_transitions(:tracker_id => 3, :role_id => 3)
-  end
-
-  # Returns an array of status transitions that can be compared
-  def status_transitions(conditions)
-    Workflow.find(:all, :conditions => conditions,
-                  :order => 'tracker_id, role_id, old_status_id, new_status_id').collect { |w| [w.old_status, w.new_status_id] }
-  end
 end

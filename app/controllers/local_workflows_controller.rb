@@ -65,7 +65,7 @@ class LocalWorkflowsController < ApplicationController
       end
 
       @target_trackers = nil
-      @target_trackers = @project.trackers.find(params[:source_tracker_id]) unless params[:target_tracker_ids].blank?
+      @target_trackers = @project.trackers.find_all_by_id(params[:target_tracker_ids]) unless params[:target_tracker_ids].blank?
 
       @target_roles = nil
       @target_roles = @project.child_roles.find_all_by_id(params[:target_role_ids]) unless params[:target_role_ids].blank?

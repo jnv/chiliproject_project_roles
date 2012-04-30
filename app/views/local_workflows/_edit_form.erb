@@ -1,12 +1,18 @@
+<%
+   role ||= nil
+   tracker ||= nil
+   used_statuses_only ||= true
+%>
+
 <p>
   <label><%= l(:label_role) %>:
-    <%= select_tag 'role_id', options_from_collection_for_select(@roles, "id", "name", @role && @role.id) %></label>
+    <%= select_tag 'role_id', options_from_collection_for_select(roles, "id", "name", role.try(:id)) %></label>
 
   <label><%= l(:label_tracker) %>:
-    <%= select_tag 'tracker_id', options_from_collection_for_select(@trackers, "id", "name", @tracker && @tracker.id) %></label>
+    <%= select_tag 'tracker_id', options_from_collection_for_select(trackers, "id", "name", tracker.try(:id)) %></label>
 
   <%= hidden_field_tag 'used_statuses_only', '0' %>
-  <label><%= check_box_tag 'used_statuses_only', '1', @used_statuses_only %> <%= l(:label_display_used_statuses_only) %></label>
+  <label><%= check_box_tag 'used_statuses_only', '1', used_statuses_only %> <%= l(:label_display_used_statuses_only) %></label>
 </p>
 <p>
   <%= submit_tag l(:button_edit), :name => nil %>

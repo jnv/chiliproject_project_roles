@@ -1,0 +1,5 @@
+<%= render :partial => 'local_workflows/action_menu' %>
+
+<% form_tag({:controller => 'local_workflows', :action => 'edit', :project_id => @project}, :method => 'get') do %>
+<%= render :partial => 'local_workflows/edit_form', :locals => { :roles => @project.child_roles, :trackers => @project.trackers }%>
+<% end %>

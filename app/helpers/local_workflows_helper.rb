@@ -1,0 +1,2 @@
+module LocalWorkflowsHelper
+end

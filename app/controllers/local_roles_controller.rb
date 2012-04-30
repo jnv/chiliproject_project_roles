@@ -7,7 +7,7 @@ class LocalRolesController < ApplicationController
   model_object LocalRole
   before_filter :find_project_by_project_id
   before_filter :authorize
-  before_filter :find_model_object, :except => [:new, :create, :report]
+  before_filter :find_model_object, :except => [:new, :create, :report] # TODO move to standalone method with scoping
   before_filter :authorize_manageable, :except => [:new, :create, :show, :report]
 
   before_filter :load_workflow_local_roles, :only => [:new]

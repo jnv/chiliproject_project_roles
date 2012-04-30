@@ -1,8 +1,6 @@
 # -*- encoding : utf-8 -*-
 require File.expand_path('../../test_helper', __FILE__)
 
-class LocalRolesController; def rescue_action(e) raise e end; end
-
 class LocalRolesControllerTest < ActionController::TestCase
 
   fixtures :projects, :versions, :users, :roles, :members, :member_roles

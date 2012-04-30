@@ -2,8 +2,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class LocalRolesControllerTest < ActionController::TestCase
-
-  fixtures :projects, :versions, :users, :roles, :members, :member_roles
+  fixtures :projects, :versions, :users, :roles, :members, :member_roles, :workflows, :trackers, :issue_statuses
 
   def setup
     @controller = LocalRolesController.new
@@ -83,17 +82,22 @@ class LocalRolesControllerTest < ActionController::TestCase
       assert !role.assignable?
     end
 
-    should_eventually "create new role with workflow copy" do
+    should "create new role with workflow copy" do
+      source = LocalRole.generate_for_project!(@project)
+      source.workflows.copy(Role.find(1))
+
+      assert source.workflows.size > 0
+
       assert_difference 'LocalRole.count', 1 do
-        post :new, :role => {:name => 'LocalRoleWithWorkflowCopy',
-                             :permissions => ['add_issues', 'edit_issues', 'log_time', ''],
-                             :assignable => '0'},
-             :copy_workflow_from => '1'
+        post :create, :project_id => @project, :local_role => {:name => 'LocalRoleWithWorkflowCopy',
+                                                               :permissions => ['add_issues', 'edit_issues', 'log_time', ''],
+                                                               :assignable => '0'},
+             :copy_workflow_from => source.id
       end
 
       role = Role.find_by_name('LocalRoleWithWorkflowCopy')
       assert_not_nil role
-      assert_equal Role.find(1).workflows.size, role.workflows.size
+      assert_equal source.workflows.size, role.workflows.size
     end
   end
 

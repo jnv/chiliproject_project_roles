@@ -7,10 +7,10 @@ class LocalRolesController < ApplicationController
   model_object LocalRole
   before_filter :find_project_by_project_id
   before_filter :authorize
-  before_filter :find_model_object, :except => [:new, :create, :report] # TODO move to standalone method with scoping
+  before_filter :find_local_role, :except => [:new, :create, :report]
   before_filter :authorize_manageable, :except => [:new, :create, :show, :report]
 
-  before_filter :load_workflow_local_roles, :only => [:new]
+  before_filter :find_available_roles, :only => [:new]
 
   # GET projects/:project_id/local_roles/show
   def show
@@ -37,7 +37,7 @@ class LocalRolesController < ApplicationController
       redirect_to project_settings_path(@project)
     else
       @permissions = @local_role.setable_permissions
-      load_workflow_local_roles
+      find_available_roles
       render :action => 'new'
     end
   end
@@ -89,7 +89,14 @@ class LocalRolesController < ApplicationController
     true
   end
 
-  def load_workflow_local_roles
-    @local_roles = Role.available_for_project(@project).find(:all, :order => 'builtin, position') # XXX includes builtin
+  # Used for workflow copy
+  def find_available_roles
+    @local_roles = @project.available_roles.find(:all)
   end
+
+  def find_local_role
+    @local_role = @project.local_roles.find(params[:id])
+  end
+
+
 end

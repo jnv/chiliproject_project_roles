@@ -265,7 +265,8 @@ class LocalWorkflowsControllerTest < ActionController::TestCase
         post :copy, :project_id => @project,
              :source_tracker_id => 'any', :source_role_id => @source_role_id,
              :target_tracker_ids => [2, 3], :target_role_ids => [2]
-        assert_response 404
+        assert_response 200
+        #could check for flash message
       end
 
     end

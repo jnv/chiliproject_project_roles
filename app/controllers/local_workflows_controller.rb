@@ -76,7 +76,7 @@ class LocalWorkflowsController < ApplicationController
     if request.post?
       if params[:source_tracker_id].blank? || params[:source_role_id].blank? || (@source_tracker.nil? && @source_role.nil?)
         flash.now[:error] = l(:error_workflow_copy_source)
-      elsif @target_trackers.nil? || @target_roles.nil?
+      elsif @target_trackers.blank? || @target_roles.blank?
         flash.now[:error] = l(:error_workflow_copy_target)
       else
         Workflow.copy(@source_tracker, @source_role, @target_trackers, @target_roles)

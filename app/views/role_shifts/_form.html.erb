@@ -1,6 +1,6 @@
 <% role_shifts = @project.role_shifts.by_builtin %>
 <% builtins = {Role::BUILTIN_ANONYMOUS => :label_user_anonymous, Role::BUILTIN_NON_MEMBER => :label_user_non_member} %>
-<% selectable_roles = load_roles_with_project_roles(@project) %>
+<% selectable_roles = load_roles(@project) %>
 
 <% form_for(:role_shifts, :url => project_role_shifts_path(@project)) do |f| %>
     <fieldset class="tabular">

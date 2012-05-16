@@ -11,7 +11,7 @@ class AddLocalRoleToRoles < ActiveRecord::Migration
   end
 
   def self.down
-    LocalRole.destroy_all
+    LocalRole.delete_all
     change_table :roles do |t|
       t.remove_index :column => [:id, :type]
       t.remove_index :column => :local_role_project_id

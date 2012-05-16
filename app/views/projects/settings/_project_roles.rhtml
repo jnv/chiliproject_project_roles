@@ -26,8 +26,8 @@
         </td>
         <td class="buttons">
           <% if role.child_role_of?(@project) %>
-              <%= link_to(l(:button_delete), {:action => 'destroy', :id => role},
-                          :method => :post,
+              <%= link_to(l(:button_delete), project_local_role_path(@project, role),
+                          :method => :delete,
                           :confirm => l(:text_are_you_sure),
                           :class => 'icon icon-del') unless role.builtin? %>
           <% end %>

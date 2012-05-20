@@ -2,7 +2,7 @@
 require File.expand_path('../../test_helper', __FILE__)
 
 class LocalWorkflowsControllerTest < ActionController::TestCase
-  fixtures :roles, :trackers, :workflows, :users, :issue_statuses
+  fixtures :all
 
   def setup
     @controller = LocalWorkflowsController.new

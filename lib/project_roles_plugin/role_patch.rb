@@ -18,7 +18,7 @@ module ProjectRolesPlugin
 
         # XXX When running migrations from scratch, Role.find fails due to non-existent local_role_project_id column
         # Kudos to Jeff Paquette http://stackoverflow.com/a/1861486/240963
-        unless File.basename($0) == "rake" && ARGV.include?("db:migrate")
+        unless File.basename($0) == "rake" && (ARGV.include?("db:migrate") || ARGV.include?("ci:setup"))
           # Kudos to Lawrence McAlpin
           # http://www.lmcalpin.com/post/5219540409/overriding-rails-validations-metaprogramatically
           @validate_callbacks.reject! do |c|

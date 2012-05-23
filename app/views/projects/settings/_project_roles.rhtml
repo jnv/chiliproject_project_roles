@@ -1,9 +1,9 @@
-<div class="contextual clear">
+<div class="contextual">
   <%= link_to l(:label_role_new), new_project_local_role_path(@project), :class => 'icon icon-add' %>
   <%= link_to l(:label_permissions_report), report_project_local_roles_path(@project), :class => 'icon icon-summary' %>
 </div>
 
-<table class="list">
+<table class="list clearfix">
   <thead>
   <tr>
     <th><%= l(:label_role) %></th>

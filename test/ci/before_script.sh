@@ -12,11 +12,20 @@ cp -r ~/builds/*/$REPO_NAME vendor/plugins/$PLUGIN_DIR
 
 #export BUNDLE_GEMFILE=$TARGET_DIR/Gemfile
 
-bundle install $BUNDLER_ARGS
+bundle install --without=$BUNDLE_WITHOUT
 
 echo "creating $DB database"
 case $DB in
   "mysql" )
+    mysql -e 'create database chiliproject_test;'
+    cat > config/database.yml << EOF
+test:
+  adapter: mysql
+  database: chiliproject_test
+  username: postgres
+EOF
+    ;;
+  "mysql2" )
     mysql -e 'create database chiliproject_test;'
     cat > config/database.yml << EOF
 test:

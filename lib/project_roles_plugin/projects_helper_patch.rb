@@ -3,18 +3,11 @@ module ProjectRolesPlugin
   module ProjectsHelperPatch
 
     def self.included(base)
-      base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
       base.class_eval do
         unloadable
-        include ChiliprojectMembersView::ProjectsHelperPatch
         alias_method_chain :project_settings_tabs, :project_roles
-        alias_method_chain :load_roles, :project_roles
-
       end
-    end
-
-    module ClassMethods
     end
 
     module InstanceMethods
@@ -35,12 +28,6 @@ module ProjectRolesPlugin
                      :label => :label_workflow})
         end
         tabs
-      end
-
-      def load_roles_with_project_roles(project)
-        #XXX could be handled by Project#available_roles but that would break the chain
-        roles = load_roles_without_project_roles(project)
-        project.local_roles + roles
       end
     end
 

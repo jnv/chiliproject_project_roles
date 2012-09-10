@@ -31,6 +31,14 @@ class MembersControllerTest < ActionController::TestCase
           post :new, :id => root_project.id, :member => {:role_ids => [@role.id], :user_id => 7}
         end
       end
+
+      should "respond successfuly to AJAX request" do
+        assert_difference 'Member.count' do
+          post :new, :format => 'js', :id => 1, :member => {:role_ids => [@role.id], :user_id => 7}
+        end
+        assert_response :success
+        assert_match 'Effect.Highlight', @response.body
+      end
     end
 
 

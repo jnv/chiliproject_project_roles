@@ -4,7 +4,7 @@ require File.expand_path('../../test_helper', __FILE__)
 # Reuse the default test
 require File.expand_path('test/functional/roles_controller_test', RAILS_ROOT)
 
-class RolesControllerTest < ActionController::TestCase
+class RolesControllerPatchTest < RolesControllerTest
 
   fixtures :roles, :users, :members, :member_roles, :workflows, :trackers
 

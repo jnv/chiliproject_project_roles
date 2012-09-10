@@ -4,6 +4,12 @@ require File.expand_path('../../test_helper', __FILE__)
 class LocalWorkflowsControllerTest < ActionController::TestCase
   fixtures :all
 
+  # Returns an array of status transitions that can be compared
+  def status_transitions(conditions)
+    Workflow.find(:all, :conditions => conditions,
+                  :order => 'tracker_id, role_id, old_status_id, new_status_id').collect { |w| [w.old_status, w.new_status_id] }
+  end
+
   def setup
     @controller = LocalWorkflowsController.new
     @request = ActionController::TestRequest.new
@@ -198,12 +204,6 @@ class LocalWorkflowsControllerTest < ActionController::TestCase
   end
 
   context "POST copy" do
-
-    # Returns an array of status transitions that can be compared
-    def status_transitions(conditions)
-      Workflow.find(:all, :conditions => conditions,
-                    :order => 'tracker_id, role_id, old_status_id, new_status_id').collect { |w| [w.old_status, w.new_status_id] }
-    end
 
     setup do
       @tracker_id = 1

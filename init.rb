@@ -32,9 +32,9 @@ Dispatcher.to_prepare :project_roles_plugin do
     ProjectsHelper.send(:include, ProjectRolesPlugin::ProjectsHelperPatch)
   end
 
-  require_dependency 'chiliproject_members_view_helper'
-  unless ChiliprojectMembersViewHelper.included_modules.include? ProjectRolesPlugin::ChiliprojectMembersViewHelperPatch
-    ChiliprojectMembersViewHelper.send(:include, ProjectRolesPlugin::ChiliprojectMembersViewHelperPatch)
+  require_dependency 'members_view_helper'
+  unless MembersViewHelper.included_modules.include? ProjectRolesPlugin::MembersViewHelperPatch
+    MembersViewHelper.send(:include, ProjectRolesPlugin::MembersViewHelperPatch)
   end
 
   require_dependency 'projects_controller'

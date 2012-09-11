@@ -1,10 +1,10 @@
 # -*- encoding : utf-8 -*-
 require File.expand_path('../../../../test_helper', __FILE__)
-class ProjectRolesPlugin::ChiliprojectMembersViewHelperPatchTest < ActiveSupport::TestCase
+class ProjectRolesPlugin::MembersViewHelperPatchTest < ActiveSupport::TestCase
 
   fixtures :users, :projects, :members, :roles, :member_roles
 
-  include ChiliprojectMembersViewHelper
+  include MembersViewHelper
 
   def setup
     @project = Project.find(1)

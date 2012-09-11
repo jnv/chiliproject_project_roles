@@ -1,6 +1,6 @@
 # -*- encoding : utf-8 -*-
 module ProjectRolesPlugin
-  module ChiliprojectMembersViewHelperPatch
+  module MembersViewHelperPatch
 
     def self.included(base)
       base.send(:include, InstanceMethods)
